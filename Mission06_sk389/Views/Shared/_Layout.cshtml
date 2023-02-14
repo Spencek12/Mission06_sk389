@@ -1,0 +1,23 @@
+﻿
+@*Layout page with navbar*@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"]</title>
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="~/css/site.css" />
+</head>
+<body>
+    <nav>
+        <a asp-controller="Home" asp-action="Index">Home</a>
+        <a asp-controller="Home" asp-action="enterMovies">Enter Movie</a>
+        <a asp-controller="Home" asp-action="Podcasts">My Podcasts</a>
+    </nav>
+    <div>
+        @RenderBody()
+    </div>
+
+</body>
+</html>
