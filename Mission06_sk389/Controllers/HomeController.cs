@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Mission06_sk389.Models;
 using System;
@@ -11,13 +12,12 @@ namespace Mission06_sk389.Controllers
 {
     public class HomeController : Controller
     {
-        private readonly ILogger<HomeController> _logger;
+
         private MoviesContext blahContext { get; set; }
         
-        //Constructor
-        public HomeController(ILogger<HomeController> logger, MoviesContext someName)
+        //Constructors
+        public HomeController(MoviesContext someName)
         {
-            _logger = logger;
             blahContext = someName;
         }
 
@@ -37,25 +37,70 @@ namespace Mission06_sk389.Controllers
         [HttpGet]
         public IActionResult enterMovies()
         {
-            return View();
+            ViewBag.Categories = blahContext.Categories.ToList();
+            //Instead of just returning the view, when adding, create a new movie
+            return View("enterMovies", new ApplicationResponse());
         }
         [HttpPost]
         public IActionResult enterMovies(ApplicationResponse ar)
         {
-            blahContext.Add(ar);
+            if (ModelState.IsValid)
+            {
+                blahContext.Update(ar);
+                blahContext.SaveChanges();
+                return View("Confirmation", ar);
+            }
+            else //if invalid
+            {
+                ViewBag.Categories = blahContext.Categories.ToList();
+                return View(ar);
+            }
+
+        }
+        // List movies
+        [HttpGet]
+        public IActionResult MovieList()
+        {
+            var movies = blahContext.Responses
+                .Include(x => x.Category)
+                .OrderBy(x => x.Category)
+                .ToList();
+            return View(movies);
+        }
+
+        //Edit movies
+        [HttpGet]
+        public IActionResult Edit(int id)
+        {
+            ViewBag.Categories = blahContext.Categories.ToList();
+
+            var movie = blahContext.Responses.Single(x => x.MovieId == id);
+
+            return View("enterMovies", movie);
+        }
+
+        [HttpPost]
+        public IActionResult Edit(ApplicationResponse blah)
+        {
+            blahContext.Update(blah);
             blahContext.SaveChanges();
-            return View("Confirmation", ar);
+
+            return RedirectToAction("Movielist");
         }
 
-        public IActionResult Privacy()
+        //Delete movies
+        [HttpGet]
+        public IActionResult Delete(int id)
         {
-            return View();
+            var movie = blahContext.Responses.Single(x => x.MovieId == id);
+            return View(movie);
         }
-
-        [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
-        public IActionResult Error()
+        [HttpPost]
+        public IActionResult Delete(ApplicationResponse ar)
         {
-            return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
+            blahContext.Responses.Remove(ar);
+            blahContext.SaveChanges();
+            return RedirectToAction("MovieList");
         }
     }
 }

@@ -11,8 +11,17 @@
 @*Form for entering movie information*@
     <div>
         <form method="post">
+            @*I added a hidden field for MovieId to edit the current movie instead of adding a new movie*@
+            <input asp-for="MovieId" type="hidden"  />
             <label asp-for="Category">Category:</label>
-            <input asp-for="Category" /><br />
+            <select asp-for="CategoryId">
+                <option value="">Select a Category</option>
+                @foreach (Category c in ViewBag.Categories)
+                {
+                    <option value="@c.CategoryId">@c.CategoryName</option>
+                }
+            </select><br />
+            <div asp-validation-summary="All"></div>
 
             <label asp-for="Title">Title:</label>
             <input asp-for="Title" /><br />

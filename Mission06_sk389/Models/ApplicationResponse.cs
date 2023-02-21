@@ -14,10 +14,8 @@ namespace Mission06_sk389.Models
         [Required]
         public int MovieId { get; set; }
         [Required]
-        public string Category { get; set; }
-        [Required]
         public string Title { get; set; }
-        [Required]
+        [Required (ErrorMessage = "Entry for 'year' invalid.")]
         public int Year { get; set; }
         [Required]
         public string Director { get; set; }
@@ -27,5 +25,10 @@ namespace Mission06_sk389.Models
         public string LentTo { get; set; }
         [MaxLength(25)]
         public string Notes { get; set; }
+
+        //Build Foreign Key relationship
+        [Required]
+        public int CategoryId { get; set; }
+        public Category Category { get; set; }
     }
 }
